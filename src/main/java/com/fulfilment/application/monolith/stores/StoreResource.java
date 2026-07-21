@@ -58,7 +58,7 @@ public class StoreResource {
       throw new WebApplicationException("Id was invalidly set on request.", 422);
     }
 
-    store.persist();
+    store.persistAndFlush();
     storeCreatedEvent.fireAsync(new StoreCreatedEvent(store));
 
     return Response.ok(store).status(201).build();

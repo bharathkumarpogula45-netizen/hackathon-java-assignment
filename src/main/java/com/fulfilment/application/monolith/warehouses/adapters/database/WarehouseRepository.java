@@ -29,20 +29,17 @@ public class WarehouseRepository implements WarehouseStore, PanacheRepository<Db
 
   @Override
   public void update(Warehouse warehouse) {
-    getEntityManager().createQuery(
-      "UPDATE DbWarehouse w SET w.location = :loc, w.capacity = :cap, " +
-      "w.stock = :stock, w.archivedAt = :archived WHERE w.businessUnitCode = :code")
-      .setParameter("loc", warehouse.location)
-      .setParameter("cap", warehouse.capacity)
-      .setParameter("stock", warehouse.stock)
-      .setParameter("archived", warehouse.archivedAt)
-      .setParameter("code", warehouse.businessUnitCode)
-      .executeUpdate();
-
-    // Clear persistence context to see updates in subsequent queries
-    getEntityManager().flush();
-    getEntityManager().clear();
+    DbWarehouse dbWarehouse = find("businessUnitCode", warehouse.businessUnitCode).firstResult();
+    if (dbWarehouse != null) {
+      dbWarehouse.location = warehouse.location;
+      dbWarehouse.capacity = warehouse.capacity;
+      dbWarehouse.stock = warehouse.stock;
+      dbWarehouse.archivedAt = warehouse.archivedAt;
+      this.persist(dbWarehouse);
+    }
   }
+
+
 
   @Override
   public void remove(Warehouse warehouse) {
